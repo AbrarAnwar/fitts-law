@@ -23,8 +23,9 @@ function makeDimension(width, height, top, right, bottom, left) {
 		cy: (height - (top + bottom)) / 2 + top};
 }
 
+
 // set up dimensions for the plotting.
-var testDimension = makeDimension(620, 400, 30, 30, 30, 30);
+var testDimension = makeDimension(window.screen.width, window.screen.height, 30, 30, 30, 30);
 var plotPositionDimension = makeDimension(220, 200, 30, 30, 30, 30);
 var plotVelocitiesDimension = plotPositionDimension;
 var plotHitsDimension = plotPositionDimension;
@@ -38,6 +39,25 @@ var LIVE_STAY = 1000;
 var MAX_TIME = 2000;
 var UPDATE_DELAY = MAX_TIME;
 var MAX_SPEED = 6; // pixel/ms
+
+// 620, 400
+//  minD 120, maxD: 300
+// minW:10 , maxW: 100
+// minD is 20% of the screen. maxD is 50% of the screen
+// minW is 2% of the screen. maxW is 16% 
+
+
+// Distance, Width
+var minW = testDimension.width*.10 
+var tests = [
+	[testDimension.width*.20 ,testDimension.width*.02 ],
+	[testDimension.width*.20 ,testDimension.width*.16 ],
+	[testDimension.width*.50 ,testDimension.width*.02 ],
+	[testDimension.width*.50 ,testDimension.width*.16 ]
+]
+
+var currentTest = 0
+
 
 function rHit(r, rTarget) {
 	return ((plotHitsDimension.innerWidth / 2) / rTarget) * r;
@@ -97,6 +117,30 @@ var effSpeedX = d3.scale.linear()
 var effSpeedY = d3.scale.linear()
 	.domain([0, MAX_SPEED])
 	.range([speedEffectiveDimension.innerHeight, 0]);
+
+var elem = document.documentElement;
+var firstClick = false;
+
+function openFullscreen() {
+	if (elem.requestFullscreen) {
+		elem.requestFullscreen();
+	} else if (elem.webkitRequestFullscreen) { /* Safari */
+		elem.webkitRequestFullscreen();
+	} else if (elem.msRequestFullscreen) { /* IE11 */
+		elem.msRequestFullscreen();
+	}
+	}
+	
+	/* Close fullscreen */
+	function closeFullscreen() {
+	if (document.exitFullscreen) {
+		document.exitFullscreen();
+	} else if (document.webkitExitFullscreen) { /* Safari */
+		document.webkitExitFullscreen();
+	} else if (document.msExitFullscreen) { /* IE11 */
+		document.msExitFullscreen();
+	}
+	}
 
 
 
@@ -228,6 +272,12 @@ var fittsTest = {
 	},
 	
 	mouseClicked: function(x, y) {
+
+		// if this is the first click, go to fullscreen
+		if (firstClick == false) {
+			firstClick = true;
+			openFullscreen();
+		}
 		
 		if (distance({x: x, y: y}, this.target) < (this.target.w / 2)) {
 			this.addDataPoint({start: this.start,
@@ -237,7 +287,7 @@ var fittsTest = {
 			this.removeTarget();
 
 			if (this.isoParams.randomize && this.currentCount >= this.isoPositions.length) {
-				this.randomizeParams();
+				this.nextTest();
 				this.currentCount = 0;
 				this.currentPosition = 0;
 				this.miss = 0;
@@ -395,7 +445,29 @@ var fittsTest = {
 			}
 		}
 	},
-	
+
+	nextTest: function() {
+		// this.isoParams.distance = Math.floor(randomAB(this.isoLimits.minD, this.isoLimits.maxD));
+		// this.isoParams.width = Math.floor(randomAB(this.isoLimits.minW, this.isoLimits.maxW));
+		
+		if (currentTest == tests.length) {
+			// if current test is the last one, close fullscreen
+			closeFullscreen();
+			// and show the results
+		}
+
+		this.isoParams.distance = tests[currentTest][0]
+		this.isoParams.width = tests[currentTest][1]
+		currentTest = currentTest + 1
+
+		$('#sliderDistance').slider('value', this.isoParams.distance);
+		$('#sliderWidth').slider('value', this.isoParams.width);
+
+		this.updateISOCircles();
+		d3.select('#sliderDistanceValue').text(this.isoParams.distance);
+		d3.select('#sliderWidthValue').text(this.isoParams.width);
+	},
+	// not used anymore. just here for reference.
 	randomizeParams: function() {
 		this.isoParams.distance = Math.floor(randomAB(this.isoLimits.minD, this.isoLimits.maxD));
 		this.isoParams.width = Math.floor(randomAB(this.isoLimits.minW, this.isoLimits.maxW));
@@ -1183,7 +1255,7 @@ $("#sliderWidth").slider({
 });
 
 $('#randomizeButton').click(function() {
-	fittsTest.randomizeParams();
+	fittsTest.nextTest();
 	$('#randomizeCheckbox').attr('checked', true);
 	fittsTest.isoParams.randomize = true;
 });
