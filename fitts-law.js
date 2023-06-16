@@ -1268,3 +1268,41 @@ $('#addDataSetButton').click(function() {
 	fittsTest.addDataSet();
 	fittsTest.active = false;
 });
+
+
+function downloadBlob(content, filename, contentType) {
+	// Create a blob
+	var blob = new Blob([content], { type: contentType });
+	var url = URL.createObjectURL(blob);
+  
+	// Create a link to download it
+	var pom = document.createElement('a');
+	pom.href = url;
+	pom.setAttribute('download', filename);
+	pom.click();
+}
+
+
+$('#downloadDataButton').click(function() {
+	let newData = [];
+
+	for (var i = 1; i <= fittsTest.data.length - 2; i++) {
+		newData[i - 1] = fittsTest.data[i];
+	}
+	// while (i <= fittsTest.dataCnt - 1) {
+    // 	let j = 0;
+	// 	while (j <= fittsTest.data[i].data.length - 1) {
+	// 		newData.push({i : fittsTest.data[i].data[j]});
+	// 		j++;
+	// 	}
+	// 	i++;
+	// }
+
+	// console.log(newData);
+	// let csv = toCsv(newData);
+	// downloadBlob(csv, 'export.cssv', 'text/csv;charset=utf-8;')
+
+
+	downloadBlob(JSON.stringify(newData), 'export.json', 'text/json;charset=utf-8;');
+
+});
