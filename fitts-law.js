@@ -40,6 +40,7 @@ var MAX_TIME = 2000;
 var UPDATE_DELAY = MAX_TIME;
 var MAX_SPEED = 6; // pixel/ms
 
+// var finalFileName;
 // 620, 400
 //  minD 120, maxD: 300
 // minW:10 , maxW: 100
@@ -1282,7 +1283,6 @@ function downloadBlob(content, filename, contentType) {
 	pom.click();
 }
 
-
 $('#downloadDataButton').click(function() {
 	let newData = [];
 
@@ -1302,7 +1302,10 @@ $('#downloadDataButton').click(function() {
 	// let csv = toCsv(newData);
 	// downloadBlob(csv, 'export.cssv', 'text/csv;charset=utf-8;')
 
-
-	downloadBlob(JSON.stringify(newData), 'export.json', 'text/json;charset=utf-8;');
+	
+	var id = document.getElementById("id").value;
+	var device = document.getElementById("device").value;
+	var createdName = `${device}_${id}`;
+	downloadBlob(JSON.stringify(newData), `${createdName}.json`, 'text/json;charset=utf-8;');
 
 });
