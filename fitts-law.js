@@ -51,10 +51,10 @@ var MAX_SPEED = 6; // pixel/ms
 // Distance, Width
 var minW = testDimension.width*.10 
 var tests = [
+	[testDimension.width*.25 ,testDimension.width*.08 ],
 	[testDimension.width*.20 ,testDimension.width*.02 ],
-	[testDimension.width*.20 ,testDimension.width*.16 ],
-	[testDimension.width*.50 ,testDimension.width*.02 ],
-	[testDimension.width*.50 ,testDimension.width*.16 ]
+	[testDimension.width*.4 ,testDimension.width*.08 ],
+	[testDimension.width*.4 ,testDimension.width*.02 ]
 ]
 
 var currentTest = 0
@@ -277,6 +277,8 @@ var fittsTest = {
 		// if this is the first click, go to fullscreen
 		if (firstClick == false) {
 			firstClick = true;
+			this.nextTest();
+
 			openFullscreen();
 		}
 		
