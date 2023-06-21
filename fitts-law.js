@@ -312,7 +312,7 @@ var fittsTest = {
 		console.log(required_keys)
 		var keys_pressed = required_keys.map(function(d) { return key_press_dict[d]; });
 		console.log(keys_pressed)
-		if (! .every(function(d) { return d == true; })) {
+		if (!keys_pressed.every(function(d) { return d == true; })) {
 			return
 		}
 		console.log("mouseClicked thru")
