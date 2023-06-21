@@ -40,7 +40,6 @@ var MAX_TIME = 2000;
 var UPDATE_DELAY = MAX_TIME;
 var MAX_SPEED = 6; // pixel/ms
 
-// var finalFileName;
 // 620, 400
 //  minD 120, maxD: 300
 // minW:10 , maxW: 100
@@ -51,10 +50,10 @@ var MAX_SPEED = 6; // pixel/ms
 // Distance, Width
 var minW = testDimension.width*.10 
 var tests = [
-	[testDimension.width*.25 ,testDimension.width*.08 ],
-	[testDimension.width*.20 ,testDimension.width*.02 ],
-	[testDimension.width*.4 ,testDimension.width*.08 ],
-	[testDimension.width*.4 ,testDimension.width*.02 ]
+	[testDimension.width*.20 ,testDimension.width*.02, ['KeyA', 'KeyB'] ],
+	// [testDimension.width*.20 ,testDimension.width*.16, ['click'] ],
+	// [testDimension.width*.50 ,testDimension.width*.02, ['click'] ],
+	// [testDimension.width*.50 ,testDimension.width*.16, ['click'] ]
 ]
 
 var currentTest = 0
@@ -122,6 +121,9 @@ var effSpeedY = d3.scale.linear()
 var elem = document.documentElement;
 var firstClick = false;
 
+var keyPressedDict = {}
+
+
 function openFullscreen() {
 	if (elem.requestFullscreen) {
 		elem.requestFullscreen();
@@ -142,7 +144,6 @@ function openFullscreen() {
 		document.msExitFullscreen();
 	}
 	}
-
 
 
 var fittsTest = {
@@ -171,6 +172,8 @@ var fittsTest = {
 	
 	updateTimeoutHandle: undefined,
 	
+	mousePosition: [0,0],
+
 	generateTarget: function() {
 		this.target = this.isoPositions[this.currentPosition];
 		this.target.distance = this.isoParams.distance;
@@ -271,16 +274,48 @@ var fittsTest = {
 		this.active = false;
 		this.currentPath = [];
 	},
+
+	keyPressed: function(key_press_dict) {
+
+		// just check if this is the right key for the test
+
+
+		// check if key_press_dict contains any of the required keys
+		//  multiple keys can be required for a test,
+		// so keys_pressed is a list bools. required_keys is a list of keys
+
+		// console.log(keys_pressed)
+		// if the list is all true, then call mouseClicked
+
+		this.mouseClicked(this.mousePosition[0], this.mousePosition[1], key_press_dict);
+
+	},
 	
-	mouseClicked: function(x, y) {
+	mouseClicked: function(x, y, key_press_dict) {
 
 		// if this is the first click, go to fullscreen
 		if (firstClick == false) {
 			firstClick = true;
-			this.nextTest();
-
+			// this.nextTest();
 			openFullscreen();
 		}
+
+		// console.log("mouseClicked" + key_press_dict[0])
+		if (currentTest == tests.length) {
+			// if current test is the last one, close fullscreen
+			closeFullscreen();
+			// delete all buttons. draw "thank you" text and say to save
+		}
+		var test = tests[currentTest]
+		console.log(test)
+		var required_keys = test[2];
+		console.log(required_keys)
+		var keys_pressed = required_keys.map(function(d) { return key_press_dict[d]; });
+		console.log(keys_pressed)
+		if (!keys_pressed.every(function(d) { return d == true; })) {
+			return
+		}
+		console.log("mouseClicked thru")
 		
 		if (distance({x: x, y: y}, this.target) < (this.target.w / 2)) {
 			this.addDataPoint({start: this.start,
@@ -314,6 +349,8 @@ var fittsTest = {
 	},
 	
 	mouseMoved: function(x, y) {
+		this.mousePosition = [x,y]
+
 		if (this.active) {
 			// skip if the mouse did actually not move
 			// that should practically never happen...
@@ -919,7 +956,23 @@ function mouseMoved()
 function mouseClicked()
 {
 	var m = d3.svg.mouse(this);
-	fittsTest.mouseClicked(m[0], m[1]);
+	console.log(m)
+	fittsTest.mouseClicked(m[0], m[1], {'click':true});
+}
+
+function keyPressed()
+{
+	var keyCode = d3.event.code;
+
+	keyPressedDict[keyCode] = true;
+	// console.log(keyPressedDict)
+
+	fittsTest.keyPressed(keyPressedDict)
+}
+
+function keyReleased(event)
+{
+	delete keyPressedDict[d3.event.code];
 }
 
 function dot(a, b) {
@@ -970,6 +1023,9 @@ function bgRect(d, dim) {
 }
 
 
+d3.select("body")
+	.on("keydown", keyPressed)
+	.on("keyup", keyReleased);
 
 var testAreaSVG = d3.select('#test-area').append('svg')
 	.attr('width', testDimension.width)
