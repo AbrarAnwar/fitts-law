@@ -355,17 +355,16 @@ var fittsTest = {
 
 			if (this.isoParams.randomize && this.currentCount >= this.isoPositions.length) {
 				this.nextTest();
-				if (currentTest == tests.length) {
+				if (currentTest < tests.length) {
 					// if current test is the last one, return
-					return;
+					
+					this.currentCount = 0;
+					this.currentPosition = 0;
+					this.miss = 0;
+					this.updateISOCircles;
+					this.generateTarget();
+					this.active = false;
 				}
-
-				this.currentCount = 0;
-				this.currentPosition = 0;
-				this.miss = 0;
-				this.updateISOCircles;
-				this.generateTarget();
-				this.active = false;
 			}
 			else {
 				this.currentCount++;
@@ -726,6 +725,7 @@ var fittsTest = {
 				datum.realDistance = distance(datum.start, datum.hit); // use real distance here.
 				datum.projectedHitOffsetX = distance(q, datum.target) * sign(q.t - 1);
 				datum.projectedHitOffsetY = y;
+				// datum.keyPressed = tests[currentTest][2].toString();
 				
 				groups[groupID].push(datum);
 			}
