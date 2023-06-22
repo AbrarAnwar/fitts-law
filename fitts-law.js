@@ -50,13 +50,24 @@ var MAX_SPEED = 6; // pixel/ms
 // Distance, Width
 var minW = testDimension.width*.10 
 var tests = [
-	[testDimension.width*.20 ,testDimension.width*.02, ['KeyA', 'KeyB'] ],
+	// [testDimension.width*.20 ,testDimension.width*.02, ['KeyA', 'KeyB'] ],
 	// [testDimension.width*.20 ,testDimension.width*.16, ['click'] ],
 	// [testDimension.width*.50 ,testDimension.width*.02, ['click'] ],
-	// [testDimension.width*.50 ,testDimension.width*.16, ['click'] ]
+	[testDimension.width*.50 ,testDimension.width*.16, ['click'] ]
 ]
 
 var currentTest = 0
+
+function findTestKeys(tests, currentTest) {
+	var currentAction = tests[currentTest][2];
+	var currentKeys = ''
+	for (var i = 0; i < currentAction.length; i++) {
+		currentKeys += currentAction[i] + ' ';
+	}
+
+	return currentKeys;
+
+};
 
 
 function rHit(r, rTarget) {
@@ -185,19 +196,38 @@ var fittsTest = {
 			d.attr('cx', function(d) { return d.x; })
 			.attr('cy', function(d) { return d.y; })
 			.attr('r', function(d) { return d.w / 2; });
+			
+			// d.attr('text-anchor', 'middle')
+			// .attr('alignment-baseline', 'middle')
+			// .text('red');
 		}
+
+		// test code for adding text inside the circle
+		// var targetArea = target.enter()
+		// .append("g")
+        // .attr("transform", "translate(" + testDimension.width / 2 + "," + testDimension.height / 2 + ")")
+		// .attr('id', 'targetArea');
 
 		target.enter()
 			.append('circle')
 				.attr('id', 'target')
 				.style('fill', 'red')
 				.call(insert);
+
+		// target.append('text')
+		// 	.attr('x', 0)
+		// 	.attr('y', 0)
+		// 	.attr('text-anchor', 'middle')
+		// 	.attr('alignment-baseline', 'middle')
+		// 	.text('red');
 									
 		target.transition()
 				.call(insert);
 
 		
 		this.active = true;
+
+		this.pressButtonPopup(findTestKeys(tests, currentTest));
 	},
 	
 	updateISOCircles: function() {
@@ -307,15 +337,14 @@ var fittsTest = {
 			// delete all buttons. draw "thank you" text and say to save
 		}
 		var test = tests[currentTest]
-		console.log(test)
+		// console.log(test)
 		var required_keys = test[2];
-		console.log(required_keys)
+		// console.log(required_keys)
 		var keys_pressed = required_keys.map(function(d) { return key_press_dict[d]; });
 		console.log(keys_pressed)
 		if (!keys_pressed.every(function(d) { return d == true; })) {
 			return
 		}
-		console.log("mouseClicked thru")
 		
 		if (distance({x: x, y: y}, this.target) < (this.target.w / 2)) {
 			this.addDataPoint({start: this.start,
@@ -326,6 +355,11 @@ var fittsTest = {
 
 			if (this.isoParams.randomize && this.currentCount >= this.isoPositions.length) {
 				this.nextTest();
+				if (currentTest == tests.length) {
+					// if current test is the last one, return
+					return;
+				}
+
 				this.currentCount = 0;
 				this.currentPosition = 0;
 				this.miss = 0;
@@ -489,7 +523,6 @@ var fittsTest = {
 	nextTest: function() {
 		// this.isoParams.distance = Math.floor(randomAB(this.isoLimits.minD, this.isoLimits.maxD));
 		// this.isoParams.width = Math.floor(randomAB(this.isoLimits.minW, this.isoLimits.maxW));
-		
 		if (currentTest == tests.length) {
 			// if current test is the last one, close fullscreen
 			closeFullscreen();
@@ -499,6 +532,23 @@ var fittsTest = {
 		this.isoParams.distance = tests[currentTest][0]
 		this.isoParams.width = tests[currentTest][1]
 		currentTest = currentTest + 1
+
+		if (currentTest == tests.length) {
+			console.log('finished all tests and exiting');
+			this.finishedTestPopup();
+	
+			this.removeTarget();
+
+			// not working as expected
+			var circles = testAreaSVG.selectAll('circle').data(this.isoPositions);
+			circles.exit()
+			.transition()
+				.attr('r', 0)
+				.remove();
+			
+			closeFullscreen();
+			return;
+		}
 
 		$('#sliderDistance').slider('value', this.isoParams.distance);
 		$('#sliderWidth').slider('value', this.isoParams.width);
@@ -619,6 +669,22 @@ var fittsTest = {
 		d3.select('#dataSet' + num)
 			.attr('class', 'active')
 	},
+
+	pressButtonPopup: function(action) {
+		d3.select('body').append('div')
+			.attr('class', 'instructions')
+			.text('Press the button with the following keys: ' + action)
+			.style('opacity', 1);
+	},
+
+	finishedTestPopup: function() {
+		d3.select('body').append('div')
+			.attr('class', 'instructions')
+			.text('Test finished! Scroll down to see the results and download the data.')
+			.style('opacity', 1)
+	},
+
+
 	
 	updatePlots: function(that) {
 		// a little I candy :D

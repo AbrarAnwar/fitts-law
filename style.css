@@ -108,6 +108,23 @@ div.msg {
 	font-weight: 700;
 }
 
+div.instructions {
+	width: 200px;
+/*	height: 40px;*/
+	position: fixed;
+	top: 50px;
+	left:50%;
+	margin-left: -100px;
+	background-color: #4389ec;
+	border-radius: 10px;
+	padding: 10px;
+	color: #fff;
+	text-align: center;
+	vertical-align: center;
+	font-family: 'Open Sans';
+	font-weight: 700;
+}
+
 div.math {
 	padding: 20px;
 }
