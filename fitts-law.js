@@ -50,9 +50,9 @@ var MAX_SPEED = 6; // pixel/ms
 // Distance, Width
 var minW = testDimension.width*.10 
 var tests = [
-	// [testDimension.width*.20 ,testDimension.width*.02, ['KeyA', 'KeyB'] ],
-	// [testDimension.width*.20 ,testDimension.width*.16, ['click'] ],
-	// [testDimension.width*.50 ,testDimension.width*.02, ['click'] ],
+	[testDimension.width*.20 ,testDimension.width*.02, ['KeyA', 'KeyB'] ],
+	[testDimension.width*.20 ,testDimension.width*.16, ['click'] ],
+	[testDimension.width*.50 ,testDimension.width*.02, ['click'] ],
 	[testDimension.width*.50 ,testDimension.width*.16, ['click'] ]
 ]
 
@@ -350,7 +350,8 @@ var fittsTest = {
 			this.addDataPoint({start: this.start,
 							   target: this.target,
 							   path: this.currentPath,
-							   hit: {x: x, y: y, t: (new Date).getTime()}});
+							   hit: {x: x, y: y, t: (new Date).getTime()},
+							   key_press: tests[currentTest][2].toString()});
 			this.removeTarget();
 
 			if (this.isoParams.randomize && this.currentCount >= this.isoPositions.length) {
@@ -437,7 +438,7 @@ var fittsTest = {
 			var id = shannon(dist, data.target.w);
 
 			this.data[this.currentDataSet].data.push({time: dt, distance: data.target.distance, width: data.target.w, hit: data.hit,
-				start: data.start, target: data.target, path: data.path});
+				start: data.start, target: data.target, path: data.path, key_press: data.key_press});
 
 			scatterGroup.append('circle')
 				.attr('class', 'cat' + this.currentDataSet)
@@ -725,7 +726,6 @@ var fittsTest = {
 				datum.realDistance = distance(datum.start, datum.hit); // use real distance here.
 				datum.projectedHitOffsetX = distance(q, datum.target) * sign(q.t - 1);
 				datum.projectedHitOffsetY = y;
-				// datum.keyPressed = tests[currentTest][2].toString();
 				
 				groups[groupID].push(datum);
 			}
