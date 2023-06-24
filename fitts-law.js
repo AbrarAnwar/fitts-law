@@ -227,7 +227,7 @@ var fittsTest = {
 		
 		this.active = true;
 
-		this.pressButtonPopup(findTestKeys(tests, currentTest));
+		this.testInstructionMsg();
 	},
 	
 	updateISOCircles: function() {
@@ -328,6 +328,8 @@ var fittsTest = {
 			firstClick = true;
 			// this.nextTest();
 			openFullscreen();
+			this.pressButtonPopup(findTestKeys(tests, currentTest));
+			this.closeTestInstructionMsg();
 		}
 
 		// console.log("mouseClicked" + key_press_dict[0])
@@ -670,16 +672,27 @@ var fittsTest = {
 			.attr('class', 'active')
 	},
 
+	testInstructionMsg: function() {
+		d3.select('body').append('div')
+			.attr('class', 'testmsg')
+			.text('Click anywhere on the screen to begin the test. The test completes when there are no more red buttons.')
+			.style('opacity', 1);
+	},
+
+	closeTestInstructionMsg: function() {
+		d3.select('body').selectAll('.testmsg').remove();
+	},
+
 	pressButtonPopup: function(action) {
 		d3.select('body').append('div')
-			.attr('class', 'instructions')
+			.attr('class', 'keyinstructions')
 			.text('Press the button with the following keys: ' + action)
 			.style('opacity', 1);
 	},
 
 	finishedTestPopup: function() {
 		d3.select('body').append('div')
-			.attr('class', 'instructions')
+			.attr('class', 'keyinstructions')
 			.text('Test finished! Scroll down to see the results and download the data.')
 			.style('opacity', 1)
 	},

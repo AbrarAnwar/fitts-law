@@ -108,7 +108,23 @@ div.msg {
 	font-weight: 700;
 }
 
-div.instructions {
+div.testmsg {
+	width: 200px;
+/*	height: 40px;*/
+	position: fixed;
+	top: 50px;
+	left:10%;
+	margin-left: -100px;
+	border-radius: 10px;
+	padding: 10px;
+	color: #000000;
+	text-align: center;
+	vertical-align: center;
+	font-family: 'Open Sans';
+	font-weight: 700;
+}
+
+div.keyinstructions {
 	width: 200px;
 /*	height: 40px;*/
 	position: fixed;
