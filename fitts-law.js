@@ -227,7 +227,9 @@ var fittsTest = {
 		
 		this.active = true;
 
-		this.testInstructionMsg();
+		if(firstClick == false){
+			this.testInstructionMsg();
+		}
 	},
 	
 	updateISOCircles: function() {
@@ -552,6 +554,9 @@ var fittsTest = {
 			return;
 		}
 
+		this.closePressButtonPopup();
+		this.pressButtonPopup(findTestKeys(tests, currentTest));
+
 		$('#sliderDistance').slider('value', this.isoParams.distance);
 		$('#sliderWidth').slider('value', this.isoParams.width);
 
@@ -688,6 +693,10 @@ var fittsTest = {
 			.attr('class', 'keyinstructions')
 			.text('Press the button with the following keys: ' + action)
 			.style('opacity', 1);
+	},
+
+	closePressButtonPopup: function() {
+		d3.select('body').selectAll('.keyinstructions').remove();
 	},
 
 	finishedTestPopup: function() {
