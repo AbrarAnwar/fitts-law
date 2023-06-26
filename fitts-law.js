@@ -50,11 +50,12 @@ var MAX_SPEED = 6; // pixel/ms
 // Distance, Width
 var minW = testDimension.width*.10 
 var tests = [
-	[testDimension.width*.20 ,testDimension.width*.02, ['KeyA', 'KeyB'] ],
-	[testDimension.width*.20 ,testDimension.width*.16, ['click'] ],
-	[testDimension.width*.50 ,testDimension.width*.02, ['click'] ],
-	[testDimension.width*.50 ,testDimension.width*.16, ['click'] ]
+	[testDimension.width*.25 ,testDimension.width*.08, ['click'] ],
+	[testDimension.width*.25 ,testDimension.width*.02, ['click'] ],
+	[testDimension.width*.4 ,testDimension.width*.08, ['click'] ],
+	[testDimension.width*.4 ,testDimension.width*.02, ['click'] ]
 ]
+
 
 var currentTest = 0
 
