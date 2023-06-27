@@ -160,6 +160,7 @@ function openFullscreen() {
 
 var fittsTest = {
 	target: {x: 0, y: 0, r: 10},
+	text: {x: 0, y: 0, text: 'red'},
 	start: {x: 0, y: 0, t: 0},
 	last: {},
 
@@ -188,10 +189,12 @@ var fittsTest = {
 
 	generateTarget: function() {
 		this.target = this.isoPositions[this.currentPosition];
+		this.text = {x: this.target.x, y: this.target.y, text: 'red'};
 		this.target.distance = this.isoParams.distance;
 		this.currentPosition = (this.currentPosition + Math.ceil(this.isoPositions.length/2)) % this.isoPositions.length;
 		
 		var target = testAreaSVG.selectAll('#target').data([this.target]);
+		var text = testAreaSVG.selectAll('#text').data([this.text]);
 		
 		var insert = function(d) {
 			d.attr('cx', function(d) { return d.x; })
@@ -203,11 +206,12 @@ var fittsTest = {
 			// .text('red');
 		}
 
-		// test code for adding text inside the circle
-		// var targetArea = target.enter()
-		// .append("g")
-        // .attr("transform", "translate(" + testDimension.width / 2 + "," + testDimension.height / 2 + ")")
-		// .attr('id', 'targetArea');
+		var insertText = function(d) {
+			console.log(d);
+			d.attr('x', function(d) { return d.x; })
+			.attr('y', function(d) { return d.y; })
+			.text('red');
+		}
 
 		target.enter()
 			.append('circle')
@@ -215,16 +219,21 @@ var fittsTest = {
 				.style('fill', 'red')
 				.call(insert);
 
-		// target.append('text')
-		// 	.attr('x', 0)
-		// 	.attr('y', 0)
-		// 	.attr('text-anchor', 'middle')
-		// 	.attr('alignment-baseline', 'middle')
-		// 	.text('red');
+		text.enter().append('text')
+			// .attr('x', this.target.x)
+  			// .attr('y', this.target.y)
+			.attr('id', 'text')
+			.attr('text-anchor', 'middle')
+			.attr('alignment-baseline', 'middle')
+			.style("font-size", 20)
+			.style("fill", "red")
+			// .text('red')
+			.call(insertText);
 									
 		target.transition()
 				.call(insert);
 
+		text.transition().call(insertText);
 		
 		this.active = true;
 
@@ -300,6 +309,10 @@ var fittsTest = {
 	},
 	
 	removeTarget: function() {
+
+		testAreaSVG.selectAll('#text').data([])
+		.exit().remove();
+
 		testAreaSVG.selectAll('#target').data([])
 			.exit()
 				.remove();
