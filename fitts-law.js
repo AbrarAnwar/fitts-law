@@ -53,9 +53,9 @@ var MAX_SPEED = 6; // pixel/ms
 var minW = testDimension.width*.10 
 var tests = [
 	[testDimension.width*.25 ,testDimension.width*.08, ['click'] ],
-	// [testDimension.width*.25 ,testDimension.width*.02, ['click'] ],
-	// [testDimension.width*.4 ,testDimension.width*.08, ['click'] ],
-	// [testDimension.width*.4 ,testDimension.width*.02, ['click'] ]
+	[testDimension.width*.25 ,testDimension.width*.02, ['click'] ],
+	[testDimension.width*.4 ,testDimension.width*.08, ['click'] ],
+	[testDimension.width*.4 ,testDimension.width*.02, ['click'] ]
 ]
 
 var buttonContainer;
@@ -673,8 +673,8 @@ var fittsTest = {
 	},
 
 	testBtns: function() {
-		this.buttonData = {label: "EXIT FULLSCREEN", x: 950, y: 700, function: function(){}};
-		this.buttonData2 = {label: "END TEST", x: 1150, y: 700, function: function(){}};
+		this.buttonData = {label: "EXIT FULLSCREEN", x: screen_height/16, y: screen_height/16, function: function(){}};
+		this.buttonData2 = {label: "END TEST", x: 200+screen_height/16, y: screen_height/16, function: function(){}};
 		var button = d3.button(); 
 		var endTestButton = testAreaSVG.selectAll(".button").data([this.buttonData]);
 
