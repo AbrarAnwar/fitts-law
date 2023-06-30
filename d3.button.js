@@ -1,6 +1,6 @@
 d3.button = function() {
 
-    var padding = 30,
+    var padding = 20,
         radius = 3,
         stdDeviation = 5,
         offsetX = 2,

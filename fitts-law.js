@@ -356,7 +356,6 @@ var fittsTest = {
 				this.nextTest();
 				if (currentTest < tests.length) {
 					// if current test is the last one, return
-					console.log("next test" + endedTest)
 					
 					this.currentCount = 0;
 					this.currentPosition = 0;
@@ -718,6 +717,11 @@ var fittsTest = {
 
 	closeTestInstructionMsg: function() {
 		d3.select('body').selectAll('.testmsg').remove();
+
+		d3.select('body').append('div')
+		.attr('class', 'endTestMsg')
+		.text('Note: You cannot end the test until one full round of 9 buttons is completed.')
+		.style('opacity', 1);
 	},
 
 	pressButtonPopup: function(action) {
@@ -752,6 +756,12 @@ var fittsTest = {
 		// 	.attr('class', 'keyinstructions')
 		// 	.text('Test finished! Scroll down to see the results and download the data.')
 		// 	.style('opacity', 1)
+
+		if(currentTest == 0) {
+			console.log("No test has been run yet");
+			return;
+		}
+
 		closeFullscreen();
 		endedTest = true;
 		fittsTest.removeTarget();
@@ -805,7 +815,7 @@ var fittsTest = {
 			.attr("id", "downloadDataButton")
 			.attr("type", "button")
 			.text("Download Data")
-			.on("click", this.downloadData);
+			.on("click", fittsTest.downloadData);
 
 			buttonContainer = container;
 	},
