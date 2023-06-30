@@ -23,9 +23,11 @@ function makeDimension(width, height, top, right, bottom, left) {
 		cy: (height - (top + bottom)) / 2 + top};
 }
 
+var screen_width = window.screen.width;
+var screen_height = window.screen.height;
 
 // set up dimensions for the plotting.
-var testDimension = makeDimension(window.screen.width, window.screen.height, 30, 30, 30, 30);
+var testDimension = makeDimension(screen_width, screen_height, 30, 30, 30, 30);
 var plotPositionDimension = makeDimension(220, 200, 30, 30, 30, 30);
 var plotVelocitiesDimension = plotPositionDimension;
 var plotHitsDimension = plotPositionDimension;
@@ -51,11 +53,12 @@ var MAX_SPEED = 6; // pixel/ms
 var minW = testDimension.width*.10 
 var tests = [
 	[testDimension.width*.25 ,testDimension.width*.08, ['click'] ],
-	[testDimension.width*.25 ,testDimension.width*.02, ['click'] ],
-	[testDimension.width*.4 ,testDimension.width*.08, ['click'] ],
-	[testDimension.width*.4 ,testDimension.width*.02, ['click'] ]
+	// [testDimension.width*.25 ,testDimension.width*.02, ['click'] ],
+	// [testDimension.width*.4 ,testDimension.width*.08, ['click'] ],
+	// [testDimension.width*.4 ,testDimension.width*.02, ['click'] ]
 ]
 
+var buttonContainer;
 
 var currentTest = 0
 
@@ -414,7 +417,8 @@ var fittsTest = {
 			if (this.updateTimeoutHandle) {
 				window.clearTimeout(this.updateTimeoutHandle);
 			}
-			this.updateTimeoutHandle = window.setTimeout(this.updatePlots, UPDATE_DELAY, this);
+
+			// this.updateTimeoutHandle = window.setTimeout(this.updatePlots, UPDATE_DELAY, this);
 			
 			
 			var newPoint = {x: x, y: y, t: (new Date).getTime()}
@@ -594,7 +598,7 @@ var fittsTest = {
 	addDataSet: function() {
 		
 		// first update the plots
-		this.updatePlots(this);
+		// this.updatePlots(this);
 		
 		this.dataCnt++;
 		var num = this.dataCnt;
@@ -680,7 +684,7 @@ var fittsTest = {
 				this.highlightDataSet(first);
 			}
 			
-			this.updatePlots(this);
+			// this.updatePlots(this);
 		}
 	},
 	
@@ -705,7 +709,8 @@ var fittsTest = {
 	pressButtonPopup: function(action) {
 		d3.select('body').append('div')
 			.attr('class', 'keyinstructions')
-			.text('Press the button with the following keys: ' + action)
+			// .text('Press the button with the following keys: ' + action)
+			.text('Each time a red button shows up, please click on it')
 			.style('opacity', 1);
 	},
 
@@ -713,11 +718,80 @@ var fittsTest = {
 		d3.select('body').selectAll('.keyinstructions').remove();
 	},
 
+	downloadData: function() {
+		console.log("Downloading Data")
+		fittsTest.addDataSet();
+		fittsTest.active = false;
+		let newData = [];
+		for (var i = 1; i <= fittsTest.data.length - 2; i++) {
+			newData[i - 1] = fittsTest.data[i];
+		}
+		var id = buttonContainer.select('#id').property('value')
+		var device = buttonContainer.select('#device').property('value')
+		var createdName = `${device}_${id}`;
+		downloadBlob(JSON.stringify(newData), `${createdName}.json`, 'text/json;charset=utf-8;');
+	},
+
+
 	finishedTestPopup: function() {
-		d3.select('body').append('div')
-			.attr('class', 'keyinstructions')
-			.text('Test finished! Scroll down to see the results and download the data.')
-			.style('opacity', 1)
+		// d3.select('body').append('div')
+		// 	.attr('class', 'keyinstructions')
+		// 	.text('Test finished! Scroll down to see the results and download the data.')
+		// 	.style('opacity', 1)
+
+
+		const container = d3.select("body")
+			.append("div")
+			.attr("class", "grid_4 border sans keyinstructions")
+			.style("height", "378px")
+			.style("padding", "10px")
+			.style("width", "278px");
+
+			// Add title
+			container.append("h2")
+			.text("Save Results");
+
+			// add instructions
+			container.append("p")
+			.text("You will be provided a participant ID. Please enter it below.")
+
+			container.append("p")
+			.text("You will also be provided a device type. Please enter it below.")
+			
+			// Add form element
+			const form = container.append("form");
+			
+			form.append("label")
+			.attr("for", "id")
+			.text("Participant ID:");
+			form.append("br");
+			form.append("input")
+			.attr("type", "text")
+			.attr("id", "id")
+			.attr("name", "id");
+			form.append("br");
+			form.append("label")
+			.attr("for", "device")
+			.text("Device Type:");
+			form.append("br");
+			form.append("input")
+			.attr("type", "text")
+			.attr("id", "device")
+			.attr("name", "device");
+			
+			// Add hr element
+			container.append("hr");
+			
+			// Add data sets section
+			const dataSetsSection = container.append("p");
+
+			container.append("button")
+			.attr("id", "downloadDataButton")
+			.attr("type", "button")
+			.text("Download Data")
+			.on("click", this.downloadData);
+
+			buttonContainer = container;
 	},
 
 
@@ -1425,10 +1499,6 @@ $('#randomizeCheckbox').change(function(event) {
 	fittsTest.isoParams.randomize = $(this).attr('checked');
 })
 
-$('#addDataSetButton').click(function() {
-	fittsTest.addDataSet();
-	fittsTest.active = false;
-});
 
 
 function downloadBlob(content, filename, contentType) {
@@ -1442,30 +1512,3 @@ function downloadBlob(content, filename, contentType) {
 	pom.setAttribute('download', filename);
 	pom.click();
 }
-
-$('#downloadDataButton').click(function() {
-	let newData = [];
-
-	for (var i = 1; i <= fittsTest.data.length - 2; i++) {
-		newData[i - 1] = fittsTest.data[i];
-	}
-	// while (i <= fittsTest.dataCnt - 1) {
-    // 	let j = 0;
-	// 	while (j <= fittsTest.data[i].data.length - 1) {
-	// 		newData.push({i : fittsTest.data[i].data[j]});
-	// 		j++;
-	// 	}
-	// 	i++;
-	// }
-
-	// console.log(newData);
-	// let csv = toCsv(newData);
-	// downloadBlob(csv, 'export.cssv', 'text/csv;charset=utf-8;')
-
-	
-	var id = document.getElementById("id").value;
-	var device = document.getElementById("device").value;
-	var createdName = `${device}_${id}`;
-	downloadBlob(JSON.stringify(newData), `${createdName}.json`, 'text/json;charset=utf-8;');
-
-});
