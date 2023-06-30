@@ -113,19 +113,19 @@ div.msg {
 }
 
 div.testmsg {
-	width: 200px;
+	width: 600px;
 /*	height: 40px;*/
 	position: fixed;
 	top: 50px;
-	left:10%;
-	margin-left: -100px;
+	/* left:35%; */
+	margin-left: 400px;
 	border-radius: 10px;
 	padding: 10px;
 	color: #000000;
 	text-align: center;
 	vertical-align: center;
 	font-family: 'Open Sans';
-	font-weight: 700;
+	font-weight: 900;
 }
 
 div.keyinstructions {

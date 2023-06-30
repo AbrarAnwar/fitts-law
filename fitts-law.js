@@ -53,9 +53,9 @@ var MAX_SPEED = 6; // pixel/ms
 var minW = testDimension.width*.10 
 var tests = [
 	[testDimension.width*.25 ,testDimension.width*.08, ['click'] ],
-	[testDimension.width*.25 ,testDimension.width*.02, ['click'] ],
-	[testDimension.width*.4 ,testDimension.width*.08, ['click'] ],
-	[testDimension.width*.4 ,testDimension.width*.02, ['click'] ]
+	// [testDimension.width*.25 ,testDimension.width*.02, ['click'] ],
+	// [testDimension.width*.4 ,testDimension.width*.08, ['click'] ],
+	// [testDimension.width*.4 ,testDimension.width*.02, ['click'] ]
 ]
 
 var buttonContainer;
@@ -135,6 +135,7 @@ var effSpeedY = d3.scale.linear()
 
 var elem = document.documentElement;
 var firstClick = false;
+var endedTest = false;
 
 var keyPressedDict = {}
 
@@ -192,13 +193,11 @@ var fittsTest = {
 
 	generateTarget: function() {
 		this.target = this.isoPositions[this.currentPosition];
-		this.text = {x: this.target.x, y: this.target.y, text: 'red'};
 		this.target.distance = this.isoParams.distance;
 		this.currentPosition = (this.currentPosition + Math.ceil(this.isoPositions.length/2)) % this.isoPositions.length;
 		
 		var target = testAreaSVG.selectAll('#target').data([this.target]);
-		var text = testAreaSVG.selectAll('#text').data([this.text]);
-		
+
 		var insert = function(d) {
 			d.attr('cx', function(d) { return d.x; })
 			.attr('cy', function(d) { return d.y; })
@@ -209,34 +208,14 @@ var fittsTest = {
 			// .text('red');
 		}
 
-		var insertText = function(d) {
-			console.log(d);
-			d.attr('x', function(d) { return d.x; })
-			.attr('y', function(d) { return d.y; })
-			.text('red');
-		}
-
 		target.enter()
 			.append('circle')
 				.attr('id', 'target')
 				.style('fill', 'red')
 				.call(insert);
-
-		text.enter().append('text')
-			// .attr('x', this.target.x)
-  			// .attr('y', this.target.y)
-			.attr('id', 'text')
-			.attr('text-anchor', 'middle')
-			.attr('alignment-baseline', 'middle')
-			.style("font-size", 20)
-			.style("fill", "red")
-			// .text('red')
-			.call(insertText);
 									
 		target.transition()
 				.call(insert);
-
-		text.transition().call(insertText);
 		
 		this.active = true;
 
@@ -313,9 +292,6 @@ var fittsTest = {
 	
 	removeTarget: function() {
 
-		testAreaSVG.selectAll('#text').data([])
-		.exit().remove();
-
 		testAreaSVG.selectAll('#target').data([])
 			.exit()
 				.remove();
@@ -349,6 +325,7 @@ var fittsTest = {
 			openFullscreen();
 			this.pressButtonPopup(findTestKeys(tests, currentTest));
 			this.closeTestInstructionMsg();
+			this.testBtns();
 		}
 
 		// console.log("mouseClicked" + key_press_dict[0])
@@ -367,7 +344,7 @@ var fittsTest = {
 			return
 		}
 		
-		if (distance({x: x, y: y}, this.target) < (this.target.w / 2)) {
+		if (distance({x: x, y: y}, this.target) < (this.target.w / 2) && !endedTest) {
 			this.addDataPoint({start: this.start,
 							   target: this.target,
 							   path: this.currentPath,
@@ -379,6 +356,7 @@ var fittsTest = {
 				this.nextTest();
 				if (currentTest < tests.length) {
 					// if current test is the last one, return
+					console.log("next test" + endedTest)
 					
 					this.currentCount = 0;
 					this.currentPosition = 0;
@@ -687,6 +665,39 @@ var fittsTest = {
 			// this.updatePlots(this);
 		}
 	},
+
+	clickEndTestBtn: function() {
+		console.log('clicked end test button');
+		closeFullscreen();
+		this.finishedTestPopup;
+	},
+
+	testBtns: function() {
+		this.buttonData = {label: "EXIT FULLSCREEN", x: 950, y: 700, function: function(){}};
+		this.buttonData2 = {label: "END TEST", x: 1150, y: 700, function: function(){}};
+		var button = d3.button(); 
+		var endTestButton = testAreaSVG.selectAll(".button").data([this.buttonData]);
+
+		endTestButton.enter()
+		.append("g")
+		.attr("class", "button")
+		.style("fill", "gray")
+		.on('mousedown', closeFullscreen)
+		.call(button);
+
+		var exitFullscreenButton = testAreaSVG.selectAll(".button2").data([this.buttonData2]);
+		exitFullscreenButton.enter()
+		.append("g")
+		.attr("class", "button")
+		.style("fill", "red")
+		.on('mousedown', this.finishedTestPopup)
+		.call(button);
+	},
+
+	closeTestBtns: function() {
+		testAreaSVG.selectAll(".button").remove();
+
+	},
 	
 	highlightDataSet: function(num) {
 		d3.selectAll('#dataSets div')
@@ -698,7 +709,10 @@ var fittsTest = {
 	testInstructionMsg: function() {
 		d3.select('body').append('div')
 			.attr('class', 'testmsg')
-			.text('Click anywhere on the screen to begin the test. The test completes when there are no more red buttons.')
+			.text('Click anywhere on the screen to begin the test.\
+			The test consists of moving the mouse to each of the red buttons, and then clicking on\
+			the red button. The test completes when there are no more red buttons.\
+			If you wish to exit the test early, press the \'end test\' button.')
 			.style('opacity', 1);
 	},
 
@@ -738,7 +752,9 @@ var fittsTest = {
 		// 	.attr('class', 'keyinstructions')
 		// 	.text('Test finished! Scroll down to see the results and download the data.')
 		// 	.style('opacity', 1)
-
+		closeFullscreen();
+		endedTest = true;
+		fittsTest.removeTarget();
 
 		const container = d3.select("body")
 			.append("div")
