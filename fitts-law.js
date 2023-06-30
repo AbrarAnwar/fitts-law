@@ -53,9 +53,9 @@ var MAX_SPEED = 6; // pixel/ms
 var minW = testDimension.width*.10 
 var tests = [
 	[testDimension.width*.25 ,testDimension.width*.08, ['click'] ],
-	// [testDimension.width*.25 ,testDimension.width*.02, ['click'] ],
-	// [testDimension.width*.4 ,testDimension.width*.08, ['click'] ],
-	// [testDimension.width*.4 ,testDimension.width*.02, ['click'] ]
+	[testDimension.width*.25 ,testDimension.width*.02, ['click'] ],
+	[testDimension.width*.4 ,testDimension.width*.08, ['click'] ],
+	[testDimension.width*.4 ,testDimension.width*.02, ['click'] ]
 ]
 
 var buttonContainer;
