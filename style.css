@@ -5,6 +5,10 @@ body {
 	font-size: 16px;
 	font-family: 'Ovo', helvetica, sans-serif;
 	font-weight: 400;
+
+	-webkit-user-select: none; /* Safari */
+	-ms-user-select: none; /* IE 10 and IE 11 */
+	user-select: none; /* Standard syntax */
 }
 
 h1 {
