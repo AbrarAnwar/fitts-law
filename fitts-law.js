@@ -56,9 +56,9 @@ var long_dim = Math.max(testDimension.width, testDimension.height);
 
 var tests = [
 	[long_dim*.25 ,long_dim*.08, ['click'] ],
-	// [long_dim*.25 ,long_dim*.02, ['click'] ],
-	// [long_dim*.4 ,long_dim*.08, ['click'] ],
-	// [long_dim*.4 ,long_dim*.02, ['click'] ]
+	[long_dim*.25 ,long_dim*.02, ['click'] ],
+	[long_dim*.4 ,long_dim*.08, ['click'] ],
+	[long_dim*.4 ,long_dim*.02, ['click'] ]
 ]
 
 var buttonContainer;
@@ -772,9 +772,9 @@ var fittsTest = {
 		const container = d3.select("body")
 			.append("div")
 			.attr("class", "grid_4 border sans saveMsg")
-			.style("height", "50%")
+			.style("height", "75%")
 			.style("padding", "0px")
-			.style("width", "40%");
+			.style("width", "50%");
 
 			// Add title
 			container.append("h2")
