@@ -51,11 +51,14 @@ var MAX_SPEED = 6; // pixel/ms
 
 // Distance, Width
 var minW = testDimension.width*.10 
+
+var long_dim = Math.max(testDimension.width, testDimension.height);
+
 var tests = [
-	[testDimension.width*.25 ,testDimension.width*.08, ['click'] ],
-	[testDimension.width*.25 ,testDimension.width*.02, ['click'] ],
-	[testDimension.width*.4 ,testDimension.width*.08, ['click'] ],
-	[testDimension.width*.4 ,testDimension.width*.02, ['click'] ]
+	[long_dim*.25 ,long_dim*.08, ['click'] ],
+	// [long_dim*.25 ,long_dim*.02, ['click'] ],
+	// [long_dim*.4 ,long_dim*.08, ['click'] ],
+	// [long_dim*.4 ,long_dim*.02, ['click'] ]
 ]
 
 var buttonContainer;
@@ -706,7 +709,7 @@ var fittsTest = {
 	},
 
 	testInstructionMsg: function() {
-		d3.select('body').append('div')
+		d3.select('#test-area').append('div')
 			.attr('class', 'testmsg')
 			.text('Click anywhere on the screen to begin the test.\
 			The test consists of moving the mouse to each of the red buttons, and then clicking on\
@@ -768,10 +771,10 @@ var fittsTest = {
 
 		const container = d3.select("body")
 			.append("div")
-			.attr("class", "grid_4 border sans keyinstructions")
-			.style("height", "378px")
-			.style("padding", "10px")
-			.style("width", "278px");
+			.attr("class", "grid_4 border sans saveMsg")
+			.style("height", "50%")
+			.style("padding", "0px")
+			.style("width", "40%");
 
 			// Add title
 			container.append("h2")
@@ -811,10 +814,12 @@ var fittsTest = {
 			// Add data sets section
 			const dataSetsSection = container.append("p");
 
+			// make button have large text
 			container.append("button")
 			.attr("id", "downloadDataButton")
 			.attr("type", "button")
 			.text("Download Data")
+			.style("font-size", "20px")
 			.on("click", fittsTest.downloadData);
 
 			buttonContainer = container;
@@ -1230,8 +1235,9 @@ d3.select("body")
 	.on("keyup", keyReleased);
 
 var testAreaSVG = d3.select('#test-area').append('svg')
-	.attr('width', testDimension.width)
-	.attr('height', testDimension.height)
+	.attr('width', '100%')
+	.attr('height', '100%')
+	// .attr("viewBox", [0, 0, 100, 100])
 	.style('pointer-events', 'all')
     .on('mousemove', mouseMoved)
 	.on('mousedown', mouseClicked)
