@@ -38,7 +38,7 @@ var speedEffectiveDimension = positionEffectiveDimension;
 var histDimension = makeDimension(540, 300, 30, 30, 30, 50);
 
 var LIVE_STAY = 1000;
-var MAX_TIME = 2000;
+var MAX_TIME = 200000;
 var UPDATE_DELAY = MAX_TIME;
 var MAX_SPEED = 6; // pixel/ms
 
